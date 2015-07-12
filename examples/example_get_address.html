@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- /meta-tags -->
+
+    <title>Location Autocomplete and Geolocate Button</title>
+
+    <!-- css-includes -->
+    <link href="css/fontello.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+</head>
+<body>
+    <div class="test-page">
+        <div class="x-form-embed"> 
+            <ul class="x-form-field-list">
+                <li>
+                    <fieldset class="">
+                        <label class="x-icon-input">
+                            <input id="location-input" placeholder="Start typing your location"/>
+                            <span id="auto-locate-button" class="x-icon"><i class="icon-target"></i></span>
+                        </label>
+                    </fieldset>
+                </li>
+                <li>
+                    <fieldset>
+                        <label>
+                            <legend><strong>Address will be auto filled here</strong></legend>
+                            <div><i>Partial address (from one or more address_components)</i></div>
+                            <input id="box1" />
+                            <div><i>Full address (with `_all:long_name` argument)</i></div>
+                            <input id="box2" />
+                        </label>
+                    </fieldset>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- scripts -->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+    <script src="../src/location-autocomplete.js"></script>
+    <script>
+
+    $(document).ready(function () {
+        // init location autocomplete
+        var autolocation = new LocationAutocomplete('location-input', {
+            'box1': {components: ['administrative_area_level_1:long_name', 'country:short_name']},
+            'box2': {components: ['_all:long_name']},
+        }, 'auto-locate-button');
+    });
+    </script>
+</body>
+</html>
