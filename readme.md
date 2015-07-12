@@ -18,6 +18,6 @@
             'target-autofill-input-1': {components: ['administrative_area_level_1:long_name', 'country:short_name']},
 
             // fills in all the address components returned by google maps api
-            'target-autofill-input-1': {components: ['_all:long_name']},
+            'target-autofill-input-2': {components: ['_all:long_name']},
 
         }, 'auto-locate-button-id');
