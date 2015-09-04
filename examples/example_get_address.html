@@ -51,7 +51,7 @@
         var autolocation = new LocationAutocomplete('location-input', true, {
             0: {components: ['_all:long_name']},
             'box1': {components: ['administrative_area_level_1:long_name', 'country:short_name']},
-            'box2': {components: ['_all:long_name']},
+            'box2': {components: ['_all:long_name'], separator: ', '},
         }, 'auto-locate-button');
 
         /*

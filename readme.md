@@ -6,8 +6,10 @@
 
 * jQuery
 * Google Maps JavaScript API
-
-        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+    
+    ```html
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+    ```
 
 ## Usage
 
@@ -31,7 +33,7 @@
         'target-autofill-input-id-1': {components: ['administrative_area_level_1:long_name', 'country:short_name']},
 
         // fills in all the address components returned by google maps api
-        'target-autofill-input-id-2': {components: ['_all:long_name']},
+        'target-autofill-input-id-2': {components: ['_all:long_name'], separator: ', '},
 
     }, 'auto-locate-button-id');
     ```
