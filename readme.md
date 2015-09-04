@@ -15,19 +15,23 @@
 
 * Initialize after document ready:
 
-        var autolocation = new LocationAutocomplete('location-input', 'auto-locate-button' /* optional */);
+    ```javascript
+    var autolocation = new LocationAutocomplete('input-id-to-autocomplete', 'auto-locate-button-id' /* optional */);
+    ```
 
 * Advanced Syntax:
+    
+    ```javascript
+    var autolocation = new LocationAutocomplete('input-id-to-autocomplete', true, // select first on enter 
+    {   
+        // fills in self or 'input-id-to-autocomplete'
+        0:  {components: ['_all:long_name']},
 
-        var autolocation = new LocationAutocomplete('input-id-to-autocomplete', true, // select first on enter 
-        {   
-            // fills in self or 'input-id-to-autocomplete'
-            0:  {components: ['_all:long_name']},
+        // fills in only the listed components
+        'target-autofill-input-id-1': {components: ['administrative_area_level_1:long_name', 'country:short_name']},
 
-            // fills in only the listed components
-            'target-autofill-input-id-1': {components: ['administrative_area_level_1:long_name', 'country:short_name']},
+        // fills in all the address components returned by google maps api
+        'target-autofill-input-id-2': {components: ['_all:long_name']},
 
-            // fills in all the address components returned by google maps api
-            'target-autofill-input-id-2': {components: ['_all:long_name']},
-
-        }, 'auto-locate-button-id');
+    }, 'auto-locate-button-id');
+    ```
