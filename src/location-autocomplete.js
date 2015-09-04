@@ -4,16 +4,24 @@
      * helper class for location field (and auto geolocate button) with google places api
      * by @aravindanve
      *
+     * syntax
+     * LocationAutocomplete(id [, geolocateButtonId])
+     * LocationAutocomplete(id [, onEnterSelectFirst] [, geolocateButtonId])
+     * LocationAutocomplete(id [, autoFillTargetFields] [, geolocateButtonId])
+     * LocationAutocomplete(id [, onEnterSelectFirst] [, autoFillTargetFields] [, geolocateButtonId])
+     * 
      * @param {String} id: id of the <input> element to autocomplete.
-     * @param {Object} autoFillTargetFields: {targetFieldId: {components: ['street_number:short_name'], separator: ', '}}
+     * @param {Boolean} onEnterSelectFirst: selects first value on enter, default: true
+     * @param {Object} autoFillTargetFields: {targetFieldId: {components: ['street_number:short_name'], separator: ', '}}, 
+     *                                       to autofill self, pass targetFieldId as 0, default: self
      * @param {String} geolocateButtonId: id of the clickable element to that triggers geolocate, and fills in the address automatically.
      * 
      */
-    function LocationAutocomplete(id, autoFillTargetFields, geolocateButtonId) {
+    function LocationAutocomplete(id, onEnterSelectFirst, autoFillTargetFields, geolocateButtonId) {
         var $elem = $('#' + id).first();
         if (!($elem.length 
-            && ($elem.prop('tagName').toLowerCase() == 'input')
-            && ($elem.prop('type').toLowerCase() == 'text'))) {
+            && ($elem.prop('tagName').toLowerCase() === 'input')
+            && ($elem.prop('type').toLowerCase() === 'text'))) {
             throw new Error('<input> with id: ' + id + ' does not exist');
         }
         this.htmlInputElement = $elem.get(0);
@@ -22,8 +30,25 @@
         this.geocoder = new google.maps.Geocoder();
         this.autoFillAddressForm = [];
         this.requiredAddressTypes = [];
+        if (typeof onEnterSelectFirst !== 'boolean') {
+            // skip onEnterSelectFirst parameter
+            geolocateButtonId = autoFillTargetFields;
+            autoFillTargetFields = onEnterSelectFirst;
+            onEnterSelectFirst = true;
+        }
+        if (typeof autoFillTargetFields === 'string' &&
+            typeof geolocateButtonId === 'undefined') {
+            // skip autoFillTargetFields parameter
+            geolocateButtonId = autoFillTargetFields;
+            autoFillTargetFields = null;
+        }
+        if (typeof autoFillTargetFields === 'undefined' ||
+            autoFillTargetFields === null) {
+            autoFillTargetFields = {};
+            autoFillTargetFields[id] = {components: ['_all:long_name']};
+        }
         for (targetId in autoFillTargetFields) {
-            var $targetElem = $('#' + targetId).first();
+            var $targetElem = (targetId == 0? $elem : $('#' + targetId).first());
             var fillComponents = [];
             var separator = typeof autoFillTargetFields[targetId].separator != 'undefined'? 
                 autoFillTargetFields[targetId].separator : ', ';
@@ -57,9 +82,17 @@
             var $geoBtn = $('#' + geolocateButtonId).first();
             if ($geoBtn.length) {
                 $($geoBtn).on('click', function() { 
+                    $elem.val('');
                     objRef.geolocate();
                 });
             }
+        }
+        if (onEnterSelectFirst) {
+            $(document).on('keypress', function (e) {
+                if (e.which === 13 && $elem.is(':focus')) {
+                    objRef.selectFirstResult();
+                }
+            });
         }
         this.clearAddressFields();
     }
@@ -82,7 +115,7 @@
             if (!this.autoFillAddressForm.length) {
                 return false;
             }
-            if ((typeof place == 'undefined') || (typeof place.address_components == 'undefined')) {
+            if ((typeof place === 'undefined') || (typeof place.address_components === 'undefined')) {
                 return false;
             }
             for (var i = 0; i < place.address_components.length; i++) {
@@ -101,7 +134,7 @@
             for (var i = 0; i < this.autoFillAddressForm.length; i++) {
                 var val = [];
                 for (var j = 0; j < this.autoFillAddressForm[i].fill.length; j++) {
-                    if (this.autoFillAddressForm[i].fill[j].component.type == '_all') {
+                    if (this.autoFillAddressForm[i].fill[j].component.type === '_all') {
                         for (var k = 0; k < place.address_components.length; k++) {
                             val.push(place.address_components[k][
                                 this.autoFillAddressForm[i].fill[j].component.style]);
@@ -140,8 +173,9 @@
             var objRef = this;
             this.geocoder.geocode({'location': latlng}, function (results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
+                    console.log(results);
                     if (results[1]) {
-                        //console.log(results[1])
+                        // console.log(results[1]);
                         objRef.fillInAddress(results[1]);
                     } else {
                         window.alert('No results found');
@@ -150,6 +184,24 @@
                     window.alert('Geocoder failed due to: ' + status);
                 }
           });
+        },
+        selectFirstResult: function () {
+            var objRef = this;
+            var firstResult = $('.pac-container .pac-item:first').text();
+            console.log(firstResult);
+            this.geocoder.geocode({'address': firstResult}, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    console.log(results);
+                    if (results[0]) {
+                        // console.log(results[1]);
+                        objRef.fillInAddress(results[0]);
+                    } else {
+                        // do nothing
+                    }
+                } else {
+                    // do nothing
+                }
+            });
         },
     };
 
